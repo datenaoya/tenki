@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <script src="components/loader.js"></script>
+    <link rel="stylesheet" href="components/loader.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+    $(function () {
+        $(".tenki").on("click", function () {
+            alert("AAA");
+            
+            var ken = $(this).attr("xml_file");
+            console.log("ken:" + ken);
+            com(ken);
+        });
+    })
+    
+    function com(ken) {
+        $.ajax({
+            url: 'http://javascriptajax.azurewebsites.net/get_tenki_json.php?city=' + ken,
+            type: 'GET',
+            dataType: 'json',
+        }).done(function (data) {
+            alert("受信成功");
+            console.log(data);
+            
+             //天気の概況文
+                $("#gaikyo").append(data.description.text);
+                $("#gaikyo").append(data.description.publicTime);
+
+                //連想配列の長さを得る
+                console.log(Object.keys(data.forecasts).length);
+                var json_obj_length = Object.keys(data.forecasts).length;
+
+                var html="";
+                for(var i = 0; i < json_obj_length;i++){
+                    html +=  '<tr>';
+                    html += '<td>' +data.forecasts[i].dateLabel + '</td>';
+                    html +="<td><img src='"+data.forecasts[i].image.url+"'></td>";
+                    html += '<td>' +data.forecasts[i].telop + '</td>';
+                    html += '</tr>';
+                }
+                $("#tenki").append(html);
+       
+        }).fail(function (data) {
+            //alert("受信失敗");
+
+        });
+
+    }                   
+    </script>
+</head>
+<body>
+	<h1>天気予報</h1>
+    <input type="button" class="tenki" value="香川" xml_file="370000">
+    <input type="button" class="tenki" value="愛媛" xml_file="380010"><br>
+    <input type="button" class="tenki" value="高知" xml_file="390010">
+    <input type="button" class="tenki" value="徳島" xml_file="360010">
+    <p>ここに天気予報を表示します</p>
+    
+    <p id="gaikyo"></p>
+    <p id="tenki"></p>
+    
+</body>
+</html>
